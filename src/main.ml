@@ -25,10 +25,12 @@ let set_length str =
   | None -> failwith ("Can’t parse “" ^ str ^ "” as a time.  Please use metric units.")
   | Some t -> length := t
 
+let set r str = r := str
+
 let arguments = [
     ("-l", Arg.String set_length, "Set the total length of the talk (example: “10m45s”)") ;
-    ("-i", Arg.String (), "Set the input file (“-” for standard input)") ;
-    ("-o", Arg.String (), "Set the output file (“-” for standard output)")
+    ("-i", Arg.String (set input), "Set the input file (“-” for standard input)") ;
+    ("-o", Arg.String (set output), "Set the output file (“-” for standard output)")
   ]
 
 let usage = "Available options:"

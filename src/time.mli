@@ -10,8 +10,19 @@ val minutes : int -> t
 val seconds : int -> t
 val milliseconds : int -> t
 
+(** The return type of [explode]. *)
+type t' = {
+    hours : int ;
+    minutes : int ;
+    seconds : int ;
+    milliseconds : int
+  }
+
 (** Convert a duration into hours, minutes, seconds, and milliseconds. *)
-val get : t -> { hours : int ; minutes : int ; seconds : int ; milliseconds : int }
+val explode : t -> t'
+
+(** Reverse [explode]. *)
+val implode : t' -> t
 
 (** Add two durations. *)
 val add : t -> t -> t

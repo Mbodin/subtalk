@@ -1,6 +1,15 @@
 
+open ExtLib
+
 (** We simply store the number of milliseconds. *)
 type t = int
+
+type t' = {
+    hours : int ;
+    minutes : int ;
+    seconds : int ;
+    milliseconds : int
+  }
 
 (** Factors *)
 let second = 1000
@@ -10,8 +19,9 @@ let hour = 60 * minute
 let hours h = hour * h 
 let minutes m = minute * m
 let seconds s = second * s
+let milliseconds m = m
 
-let get t =
+let explode t =
   let ms = t mod second in
   let t = t / second in
   let s = t mod minute in
@@ -24,6 +34,9 @@ let get t =
     milliseconds = ms
   }
 
+let implode t =
+  hours t.hours + minutes t.minutes + seconds t.seconds + milliseconds t.milliseconds
+
 let add = (+)
 
 let opp = (~-)
@@ -32,11 +45,6 @@ let mult = ( * )
 
 let div t i =
   if i = 0 then None else Some (t / i)
-
-let explode s =
-  let rec exp i l =
-    if i < 0 then l else exp (i - 1) (s.[i] :: l) in
-  exp (String.length s - 1) []
 
 let parse_int = function
   | '0' -> Some 0
@@ -57,7 +65,7 @@ let parse str =
     | _, [] -> None
     | i, ' ' :: l -> aux acc (i, l)
     | i, c :: l ->
-      let i = value i ~default=0 in
+      let i = Option.default 0 i in
       match parse_int c with
       | Some c -> aux acc (Some (10 * i + c), l)
       | None ->
@@ -67,5 +75,5 @@ let parse str =
         | 'm' :: l -> aux (acc + minutes i) (None, l)
         | 'h' :: l -> aux (acc + hours i) (None, l)
         | _ -> None in
-  aux 0 (None, explode str)
+  aux 0 (None, String.explode str)
 
