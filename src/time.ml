@@ -37,7 +37,11 @@ let explode t =
 let implode t =
   hours t.hours + minutes t.minutes + seconds t.seconds + milliseconds t.milliseconds
 
+let positive t = t >= 0
+
 let add = (+)
+
+let sub = (-)
 
 let opp = (~-)
 
@@ -59,11 +63,25 @@ let parse_int = function
   | '9' -> Some 9
   | _ -> None
 
+let print t =
+  if t = 0 then "0s"
+  else
+    let t = explode t in
+    let p v u =
+      if v <> 0 then Printf.sprintf "%d%s" v u
+      else "" in
+    String.concat "" [
+        p t.hours "h" ;
+        p t.minutes "m" ;
+        p t.seconds "s" ;
+        p t.milliseconds "ms"
+      ]
+
 let parse str =
   let rec aux acc = function
     | None, [] -> Some acc
     | _, [] -> None
-    | i, ' ' :: l -> aux acc (i, l)
+    | i, (' ' | '\t') :: l -> aux acc (i, l)
     | i, c :: l ->
       let i = Option.default 0 i in
       match parse_int c with

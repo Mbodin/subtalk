@@ -16,6 +16,8 @@ Once installed, compile the project with `esy`:
 esy
 ```
 
+The compiled program is then available in `_build/default/src/main.exe`.
+
 # Licence
 
 Copyright © 2020 Martin Constantino–Bodin

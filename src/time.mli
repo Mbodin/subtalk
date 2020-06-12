@@ -24,8 +24,14 @@ val explode : t -> t'
 (** Reverse [explode]. *)
 val implode : t' -> t
 
+(** State whether a time is indeed positive. *)
+val positive : t -> bool
+
 (** Add two durations. *)
 val add : t -> t -> t
+
+(** Substract the second duration to the first. *)
+val sub : t -> t -> t
 
 (** Takes the opposite of a duration (changing its sign). *)
 val opp : t -> t
@@ -37,6 +43,9 @@ val div : t -> int -> t option
 (** Multiply a duration. *)
 val mult : t -> int -> t
 
-(** Parse a time in a string. *)
+(** Print the time using metric units. *)
+val print : t -> string
+
+(** Parse a time in a string, written using metric units. *)
 val parse : string -> t option
 
