@@ -54,13 +54,13 @@ let _ =
     recode (Std.input_all input) in
   close_in input ;
   let sentences =
-    Uuseg_string.fold_utf_8 `Line_break (fun l line ->
+    List.fold_left (fun l line ->
       if Re.Str.string_match (Re.Str.regexp "\\(.*[^ \t\n\r]\\)[ \t\n\r]*$") line 0 then
         let line =
           try Re.Str.matched_group 1 line
           with Not_found -> assert false in
         line :: l
-      else l) [] file in
+      else l) [] (String.split_on_char '\n' file) in
   let sentences = List.rev sentences in
   (** Counting how many syllables there are. *)
   let sentences =

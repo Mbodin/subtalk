@@ -28,8 +28,9 @@ let syllables str =
   (** We then enter the main function. *)
   let (n, _) =
     List.fold_left (fun (n, state) -> function
-        | ',' -> (1 + n, Other) (** A comma is worth one syllable. *)
-        | '.' -> (3 + n, Other) (** A dot is worth three syllables. *)
+        | ',' | ';' -> (1 + n, Other) (** Commas and semicolons are worth one syllable. *)
+        | ':' | '(' -> (2 + n, Other) (** Colons and (beginning of) parenthesese are worth two syllables. *)
+        | '.' | '?' | '!' -> (3 + n, Other) (** A dot is worth three syllables. *)
         | c ->
           let s = get_kind c in
           let n =

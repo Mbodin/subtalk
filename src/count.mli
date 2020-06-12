@@ -2,7 +2,7 @@
 
 (** Count how many syllables a string has.
    More precisely, how many syllables-time a string needs to be pronounced.
-   In particular, commas and dots are considered to lasts some additional time. *)
+   In particular, commas and other symbols are considered to last some additional time. *)
 val syllables : string -> int
 
 (** Count the number of pauses in a string. *)
