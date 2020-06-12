@@ -1,0 +1,9 @@
+
+(library
+	(public_name subtalk)
+	(name subtalk)
+	(libraries uutf uuseg)
+	(modes native))
+
+(env (dev (flags (:standard -w -50))))
+

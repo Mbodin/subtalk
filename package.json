@@ -1,0 +1,22 @@
+{
+	"name": "subtalk",
+	"version": "1.0",
+	"description": "Generate well-spaced subtitles from a script",
+	"license": "GPL-3.0-or-later",
+	"esy": {
+		"build": "dune build --profile release @all",
+		"buildsInSource": "_build"
+	},
+	"scripts": {
+		"clean": "rm -R _build",
+		"doc": "dune build @doc"
+	},
+	"dependencies": {
+		"@opam/dune": ">=2.0",
+		"@opam/uutf": "*",
+		"@opam/uuseg": "*",
+		"@opam/odoc": "*",
+		"@opam/extlib": "~1.7",
+		"ocaml": "~4.7"
+	}
+}
