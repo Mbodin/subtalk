@@ -1,5 +1,5 @@
 {
-  "checksum": "80a5aa5f17139169aed7bab7413e6376",
+  "checksum": "141c84b29b3dc4ee4e4c71d529a757eb",
   "root": "subtalk@link-dev:./package.json",
   "node": {
     "subtalk@link-dev:./package.json": {
@@ -14,8 +14,9 @@
       "overrides": [],
       "dependencies": [
         "ocaml@4.7.1004@d41d8cd9", "@opam/uutf@opam:1.0.2@4440868f",
-        "@opam/uuseg@opam:13.0.0@f60712a7", "@opam/odoc@opam:1.5.0@27d69a99",
-        "@opam/extlib@opam:1.7.7@750728e7", "@opam/dune@opam:2.6.0@3a9808e6"
+        "@opam/uuseg@opam:13.0.0@f60712a7", "@opam/re@opam:1.9.0@d4d5e13d",
+        "@opam/odoc@opam:1.5.0@27d69a99", "@opam/extlib@opam:1.7.7@750728e7",
+        "@opam/dune@opam:2.6.0@3a9808e6"
       ],
       "devDependencies": []
     },

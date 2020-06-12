@@ -14,6 +14,20 @@ let recode ?encoding src =
   Buffer.contents dst
 
 
+(** SubRip-related functions. *)
+
+let print_time t =
+  let t = Time.explode t in
+  Printf.sprintf "%02d:%02d:%02d,%03d" t.hours t.minutes t.seconds t.milliseconds
+
+let print_duration (b, e) =
+  Printf.sprintf "%s --> %s" (print_time b) (print_time e)
+
+let print_subrib l =
+  String.concat "\n" (List.mapi (fun i (b, e, str) ->
+    Printf.sprintf "%d\n%s\n%s\n" i (print_duration (b, e)) str) l)
+
+
 (** Arguments of the program. *)
 
 let input = ref "-"
@@ -46,5 +60,13 @@ let _ =
     if !output = "-" then stdout else open_out !output in
   let file =
     recode (Std.input_all input) in
-  () (* TODO *)
+  close_in input ;
+  let sentences =
+    Uuseg_string.fold_utf_8 `Line_break (fun l line ->
+      if Re.Str.string_match (Re.Str.regexp "[ \t\n\r]*") line 0 then l
+      else line :: l) [] file in
+  ignore sentences ; (* TODO *)
+  Printf.fprintf output "%s" (print_time !length) ;
+  close_out output ;
+  ()
 

@@ -1,8 +1,7 @@
 
-(library
-	(public_name subtalk)
-	(name subtalk)
-	(libraries extlib uutf uuseg)
+(executable
+	(name main)
+	(libraries extlib re uutf uuseg.string)
 	(modes native))
 
 (env (dev (flags (:standard -w -50))))

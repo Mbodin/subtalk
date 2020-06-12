@@ -9,10 +9,12 @@
 	},
 	"scripts": {
 		"clean": "rm -R _build",
-		"doc": "dune build @doc"
+		"doc": "dune build @doc",
+		"exec": "dune exec src/main.exe"
 	},
 	"dependencies": {
 		"@opam/dune": ">=2.0",
+		"@opam/re": "*",
 		"@opam/uutf": "*",
 		"@opam/uuseg": "*",
 		"@opam/odoc": "*",
