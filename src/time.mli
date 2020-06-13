@@ -43,9 +43,9 @@ val div : t -> int -> t option
 (** Multiply a duration. *)
 val mult : t -> int -> t
 
-(** Print the time using metric units. *)
+(** Print the time in a human readable way. *)
 val print : t -> string
 
-(** Parse a time in a string, written using metric units. *)
+(** Parse a time in a string, reversing [print]. *)
 val parse : string -> t option
 

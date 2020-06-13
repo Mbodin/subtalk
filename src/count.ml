@@ -1,6 +1,9 @@
 
 open ExtLib
 
+let length =
+  Uuseg_string.fold_utf_8 `Grapheme_cluster (fun x _ -> x + 1) 0
+
 (** The state of the automaton to count on syllables.
  * It describes what kind of character was the previous character: *)
 type state =

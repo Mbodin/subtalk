@@ -1,4 +1,6 @@
 
+open ExtLib
+
 (** Reencoding a string to UTF-8. *)
 let recode ?encoding src =
   let rec loop d e = match Uutf.decode d with
@@ -14,6 +16,22 @@ let recode ?encoding src =
   Buffer.contents dst
 
 
+(** Program modes, stating how lines should be counted. *)
+type counting_mode =
+  | Syllables (** Count syllables, default *)
+  | SimpleLength (** Count the number of characters *)
+  | Equality (** Just always return one *)
+
+let count_function = function
+  | Syllables -> Count.syllables
+  | SimpleLength -> Count.length
+  | Equality -> (fun _ -> 1)
+
+let count_word = function
+  | Syllables -> "syllable"
+  | SimpleLength -> "character"
+  | Equality -> "sentence"
+
 (** Arguments of the program. *)
 
 let input = ref "-"
@@ -21,10 +39,12 @@ let output = ref "-"
 let length = ref (Time.minutes 0)
 let pause = ref (Time.milliseconds 500)
 let quiet = ref false
+let group = ref 1
+let mode = ref Syllables
 
 let set_time r str =
   match Time.parse str with
-  | None -> failwith ("Can’t parse “" ^ str ^ "” as a time.  Please use metric units.")
+  | None -> failwith ("Can’t parse “" ^ str ^ "” as a time.")
   | Some t -> r := t
 
 let set = (:=)
@@ -32,6 +52,10 @@ let set = (:=)
 let arguments = [
     ("-l", Arg.String (set_time length), "Set the total length of the talk (example: “10m”)") ;
     ("-p", Arg.String (set_time pause), "Set the length of a pause (example: “300ms”)") ;
+    ("-g", Arg.Int (set group), "Group the N consecutive lines in each subtitle") ;
+    ("-y", Arg.Unit (fun _ -> mode := Syllables), "Weight sentences by syllables (default)") ;
+    ("-s", Arg.Unit (fun _ -> mode := SimpleLength), "Weight sentences by their length") ;
+    ("-e", Arg.Unit (fun _ -> mode := Equality), "Weight all sentences the same way") ;
     ("-q", Arg.Set quiet, "Do not display any information") ;
     ("-i", Arg.String (set input), "Set the input file (“-” for standard input)") ;
     ("-o", Arg.String (set output), "Set the output file (“-” for standard output)")
@@ -61,11 +85,17 @@ let _ =
           with Not_found -> assert false in
         line :: l
       else l) [] (String.split_on_char '\n' file) in
-  let sentences = List.rev sentences in
   (** Counting how many syllables there are. *)
+  let count = count_function !mode in
   let sentences =
     List.map (fun sentence ->
-      (Count.pauses sentence, Count.syllables sentence, sentence)) sentences in
+      (Count.pauses sentence, count sentence, sentence)) sentences in
+  let (_, sentences) =
+    let group_state = !group - 1 in
+    List.fold_left (fun (next, sentences) (pause, syllable, sentence) ->
+      let next = sentence :: List.take group_state next in
+      let sentence = String.concat " /\n" next in
+      (next, (pause, syllable, sentence) :: sentences)) ([], []) sentences in
   let (pauses, syllables) =
     List.fold_left (fun (pauses, syllables) (pause, syllable, sentence) ->
       (pauses + pause, syllables + syllable)) (0, 0) sentences in
@@ -76,7 +106,7 @@ let _ =
     Printf.printf "Total length: %s\n" (Time.print length) ;
     Printf.printf "Length of a pause: %s\n" (Time.print pause) ;
     Printf.printf "Total pauses: %d\n" pauses ;
-    Printf.printf "Total syllables: %d\n" syllables ;
+    Printf.printf "Total %ss: %d\n" (count_word !mode) syllables ;
   ) ;
   let time_left = Time.sub length (Time.mult pause pauses) in
   if not (Time.positive time_left) && not quiet then
@@ -89,7 +119,7 @@ let _ =
       Time.milliseconds 0
     | Some t ->
       if not quiet then
-        Printf.printf "Length of a syllable: %s\n" (Time.print t) ;
+        Printf.printf "Length of a %s: %s\n" (count_word !mode) (Time.print t) ;
       t in
   (** Creating the subtitles *)
   let (end_time, subrip) =
