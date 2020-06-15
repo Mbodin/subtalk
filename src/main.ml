@@ -41,6 +41,7 @@ let pause = ref (Time.milliseconds 500)
 let quiet = ref false
 let group = ref 1
 let mode = ref Syllables
+let subrip = ref false
 
 let set_time r str =
   match Time.parse str with
@@ -57,6 +58,7 @@ let arguments = [
     ("-s", Arg.Unit (fun _ -> mode := SimpleLength), "Weight sentences by their length") ;
     ("-e", Arg.Unit (fun _ -> mode := Equality), "Weight all sentences the same way") ;
     ("-q", Arg.Set quiet, "Do not display any information") ;
+    ("-r", Arg.Set subrip, "The input is itself a SubRip file") ;
     ("-i", Arg.String (set input), "Set the input file (“-” for standard input)") ;
     ("-o", Arg.String (set output), "Set the output file (“-” for standard output)")
   ]
@@ -78,13 +80,18 @@ let _ =
     recode (Std.input_all input) in
   close_in input ;
   let sentences =
-    List.fold_left (fun l line ->
-      if Re.Str.string_match (Re.Str.regexp "\\(.*[^ \t\n\r]\\)[ \t\n\r]*$") line 0 then
-        let line =
-          try Re.Str.matched_group 1 line
-          with Not_found -> assert false in
-        line :: l
-      else l) [] (String.split_on_char '\n' file) in
+    if !subrip then (
+      List.concat (List.map (fun i ->
+        String.split_on_char '\n' i.Subrip.message) (Subrip.import file))
+    ) else (
+      List.fold_left (fun l line ->
+        if Re.Str.string_match (Re.Str.regexp "\\(.*[^ \t\n\r]\\)[ \t\n\r]*$") line 0 then
+          let line =
+            try Re.Str.matched_group 1 line
+            with Not_found -> assert false in
+          line :: l
+        else l) [] (String.split_on_char '\n' file)
+    ) in
   (** Counting how many syllables there are. *)
   let count = count_function !mode in
   let sentences =

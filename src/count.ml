@@ -40,8 +40,8 @@ let syllables str =
             match state, s with
             | (Consonant | Other), Vowel -> 1 + n
             | _, _ -> n in
-          (n, s)) (1, Other) str in
-  n
+          (n, s)) (0, Other) str in
+  max 1 n
 
 let pauses str =
   let str = String.explode str in
