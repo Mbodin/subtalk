@@ -42,6 +42,9 @@ let quiet = ref false
 let group = ref 1
 let mode = ref Syllables
 let subrip = ref false
+let separator = ref " /"
+let after = ref ""
+let before = ref ""
 
 let set_time r str =
   match Time.parse str with
@@ -51,16 +54,19 @@ let set_time r str =
 let set = (:=)
 
 let arguments = [
-    ("-l", Arg.String (set_time length), "Set the total length of the talk (example: “10m”)") ;
-    ("-p", Arg.String (set_time pause), "Set the length of a pause (example: “300ms”)") ;
-    ("-g", Arg.Int (set group), "Group the N consecutive lines in each subtitle") ;
-    ("-y", Arg.Unit (fun _ -> mode := Syllables), "Weight sentences by syllables (default)") ;
-    ("-s", Arg.Unit (fun _ -> mode := SimpleLength), "Weight sentences by their length") ;
+    ("-a", Arg.String (set after), "Add a suffix to every line") ;
+    ("-b", Arg.String (set before), "Add a prefix to every line") ;
     ("-e", Arg.Unit (fun _ -> mode := Equality), "Weight all sentences the same way") ;
+    ("-g", Arg.Int (set group), "Group the N consecutive lines in each subtitle") ;
+    ("-i", Arg.String (set input), "Set the input file (“-” for standard input)") ;
+    ("-l", Arg.String (set_time length), "Set the total length of the talk (example: “10m”)") ;
+    ("-m", Arg.Unit (fun _ -> mode := SimpleLength), "Weight sentences by their length") ;
+    ("-n", Arg.String (set separator), "Set the separator for groups (default “ / ”)") ;
+    ("-o", Arg.String (set output), "Set the output file (“-” for standard output)") ;
+    ("-p", Arg.String (set_time pause), "Set the length of a pause (example: “300ms”)") ;
     ("-q", Arg.Set quiet, "Do not display any information") ;
     ("-r", Arg.Set subrip, "The input is itself a SubRip file") ;
-    ("-i", Arg.String (set input), "Set the input file (“-” for standard input)") ;
-    ("-o", Arg.String (set output), "Set the output file (“-” for standard output)")
+    ("-y", Arg.Unit (fun _ -> mode := Syllables), "Weight sentences by syllables (default)")
   ]
 
 let usage = "Available options:"
@@ -94,14 +100,17 @@ let _ =
     ) in
   (** Counting how many syllables there are. *)
   let count = count_function !mode in
+  let separator = !separator ^ "\n" in
+  let before = !before in
+  let after = !after in
   let sentences =
     List.map (fun sentence ->
-      (Count.pauses sentence, count sentence, sentence)) sentences in
+      (Count.pauses sentence, count sentence, before ^ sentence ^ after)) sentences in
   let (_, sentences) =
     let group_state = !group - 1 in
     List.fold_left (fun (next, sentences) (pause, syllable, sentence) ->
       let next = sentence :: List.take group_state next in
-      let sentence = String.concat " /\n" next in
+      let sentence = String.concat separator next in
       (next, (pause, syllable, sentence) :: sentences)) ([], []) sentences in
   let (pauses, syllables) =
     List.fold_left (fun (pauses, syllables) (pause, syllable, sentence) ->

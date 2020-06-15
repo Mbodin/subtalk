@@ -18,7 +18,7 @@ let create b e m = {
 
 let print_time t =
   let t = Time.explode t in
-  Printf.sprintf "%d:%d:%d,%d" t.hours t.minutes t.seconds t.milliseconds
+  Printf.sprintf "%02d:%02d:%02d,%03d" t.hours t.minutes t.seconds t.milliseconds
 
 let print_duration b e =
   Printf.sprintf "%s --> %s" (print_time b) (print_time e)
@@ -31,8 +31,8 @@ let print l =
     Printf.sprintf "%d\n%s\n" (1 + i) (print_item it)) l)
 
 let parse_time str =
-  try Scanf.sscanf str "%d:%d:%d,%d%!"
-        (fun h m s ms ->
+  try Scanf.sscanf str "%d:%d:%d%[,.]%d%!"
+        (fun h m s _ ms ->
           Some (Time.implode {
               Time.hours = h ;
               Time.minutes = m ;
