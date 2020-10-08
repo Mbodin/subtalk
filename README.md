@@ -17,6 +17,28 @@ esy
 ```
 
 The compiled program is then available in `_build/default/src/main.exe`.
+To get more help, type:
+```bash
+_build/default/src/main.exe -h
+```
+
+For instance, given a text file `example.txt`, to convert it into `example.srt` lasting 10 minutes, do the following:
+```bash
+_build/default/src/main.exe -i example.txt -o example.srt -l 10m
+```
+The file `example.srt` will then contain all the sentences of `example.txt`, but spaced out such that the total duration of `example.srt` will be 10 minutes.
+
+To add pauses in the text `example.txt`, use the `*` character.
+These will be interpreted as a constant pause (by default of half a second).
+It particular, it won’t be stretched out like syllables to fit the target time.
+
+A common usage is to create subtitle files meant to read outloud, for instance for a karaoke.
+In such a usage, it may be useful to display more than one line simultaneously.
+Use the `-g N` option to group `N` line together.
+For instance, the following invocation will create a file `example.srt` with groups of three lines, thus always displaying the next two sentences.
+```bash
+_build/default/src/main.exe -i example.txt -o example.srt -l 10m -g 3
+```
 
 # Licence
 

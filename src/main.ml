@@ -63,7 +63,7 @@ let arguments = [
     ("-m", Arg.Unit (fun _ -> mode := SimpleLength), "Weight sentences by their length") ;
     ("-n", Arg.String (set separator), "Set the separator for groups (default “ / ”)") ;
     ("-o", Arg.String (set output), "Set the output file (“-” for standard output)") ;
-    ("-p", Arg.String (set_time pause), "Set the length of a pause (example: “300ms”)") ;
+    ("-p", Arg.String (set_time pause), "Set the length of a pause (default “500ms”)") ;
     ("-q", Arg.Set quiet, "Do not display any information") ;
     ("-r", Arg.Set subrip, "The input is itself a SubRip file") ;
     ("-y", Arg.Unit (fun _ -> mode := Syllables), "Weight sentences by syllables (default)")
